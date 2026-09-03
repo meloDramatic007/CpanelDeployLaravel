@@ -1,0 +1,8 @@
+{
+    "name": "test/sample-project",
+    "description": "Fake project for locally testing the cPanel Deploy Console.",
+    "type": "project",
+    "require": {
+        "php": "^8.2"
+    }
+}

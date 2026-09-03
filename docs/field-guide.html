@@ -1,0 +1,648 @@
+<title>Deploy Console Field Guide</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --ground: #f5f6f8;
+    --surface: #ffffff;
+    --surface-sunken: #eef0f3;
+    --ink: #14181f;
+    --ink-muted: #4c5563;
+    --ink-faint: #7c8494;
+    --accent: #a9662a;
+    --accent-ink: #ffffff;
+    --accent-soft: #f4e3cf;
+    --ok: #2f7a5a;
+    --ok-soft: #dcefe6;
+    --danger: #b0402f;
+    --danger-soft: #f6dfda;
+    --line: rgba(20, 24, 31, 0.13);
+    --line-strong: rgba(20, 24, 31, 0.24);
+    --shadow: 0 1px 2px rgba(20, 24, 31, 0.05), 0 8px 24px -12px rgba(20, 24, 31, 0.18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #12151b;
+      --surface: #191e27;
+      --surface-sunken: #10141a;
+      --ink: #e8eaef;
+      --ink-muted: #a3abba;
+      --ink-faint: #6f7889;
+      --accent: #dfa15c;
+      --accent-ink: #1a1206;
+      --accent-soft: #3a2c18;
+      --ok: #6fc29b;
+      --ok-soft: #17322a;
+      --danger: #e08b7c;
+      --danger-soft: #3a201c;
+      --line: rgba(232, 234, 239, 0.13);
+      --line-strong: rgba(232, 234, 239, 0.26);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #12151b;
+    --surface: #191e27;
+    --surface-sunken: #10141a;
+    --ink: #e8eaef;
+    --ink-muted: #a3abba;
+    --ink-faint: #6f7889;
+    --accent: #dfa15c;
+    --accent-ink: #1a1206;
+    --accent-soft: #3a2c18;
+    --ok: #6fc29b;
+    --ok-soft: #17322a;
+    --danger: #e08b7c;
+    --danger-soft: #3a201c;
+    --line: rgba(232, 234, 239, 0.13);
+    --line-strong: rgba(232, 234, 239, 0.26);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+    font-weight: 700;
+    text-wrap: balance;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  code, .mono, .path {
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  code {
+    background: var(--surface-sunken);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-size: 0.88em;
+  }
+
+  a { color: var(--accent); }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ---- masthead ---- */
+
+  .masthead {
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .masthead-inner {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 56px 28px 40px;
+  }
+
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); }
+  .dot.live { background: var(--ok); }
+
+  .titlebar-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    margin-left: 4px;
+  }
+
+  h1.doc-title {
+    font-size: clamp(30px, 4.4vw, 42px);
+    letter-spacing: -0.01em;
+    margin-top: 10px;
+  }
+
+  .dek {
+    max-width: 62ch;
+    color: var(--ink-muted);
+    font-size: 17px;
+    margin-top: 14px;
+  }
+
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 32px;
+  }
+
+  .stat {
+    background: var(--surface);
+    padding: 14px 16px;
+  }
+
+  .stat-k {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .stat-v {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 14.5px;
+    margin-top: 4px;
+    color: var(--ink);
+  }
+
+  .stat-v.ok::before { content: "● "; color: var(--ok); }
+
+  /* ---- body ---- */
+
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 28px 96px;
+  }
+
+  .prose { max-width: 66ch; }
+
+  section { margin-top: 64px; }
+  section:first-child { margin-top: 0; }
+
+  .part-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .part-num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    color: var(--accent);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+
+  .part-head h2 { font-size: 25px; }
+
+  p { color: var(--ink-muted); }
+  .prose p { margin: 14px 0; }
+
+  /* ---- step list ---- */
+
+  .steps {
+    list-style: none;
+    margin: 24px 0 0;
+    padding: 0;
+    border-left: 2px solid var(--line);
+  }
+
+  .step {
+    position: relative;
+    padding: 2px 0 30px 30px;
+  }
+  .step:last-child { padding-bottom: 4px; }
+
+  .step::before {
+    content: attr(data-n);
+    position: absolute;
+    left: -15px;
+    top: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .step h3 {
+    font-size: 16.5px;
+    margin-bottom: 6px;
+  }
+
+  .step p { margin: 6px 0; font-size: 15px; }
+
+  .frame {
+    margin-top: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .frame-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-sunken);
+  }
+
+  .frame-bar .dot { width: 7px; height: 7px; }
+
+  .frame-body {
+    padding: 12px 14px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .frame-body .field { color: var(--ink-faint); }
+  .frame-body .val { color: var(--ink); }
+  .frame-body .cmt { color: var(--ink-faint); font-style: italic; }
+
+  /* ---- callouts ---- */
+
+  .callout {
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin: 22px 0;
+    border: 1px solid var(--line);
+  }
+
+  .callout h4 {
+    font-family: "IBM Plex Sans Condensed", sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .callout p { margin: 6px 0; font-size: 14.5px; }
+  .callout ul { margin: 8px 0 0; padding-left: 20px; }
+  .callout li { margin: 4px 0; font-size: 14.5px; color: var(--ink-muted); }
+
+  .callout.warn {
+    background: var(--danger-soft);
+    border-color: color-mix(in srgb, var(--danger) 35%, var(--line));
+  }
+  .callout.warn h4 { color: var(--danger); }
+
+  .callout.note {
+    background: var(--accent-soft);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  }
+  .callout.note h4 { color: var(--accent); }
+
+  /* ---- diagram ---- */
+
+  figure { margin: 28px 0 8px; }
+
+  .diagram-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 8px 8px;
+    box-shadow: var(--shadow);
+  }
+
+  svg text { fill: currentColor; font-family: "IBM Plex Mono", monospace; }
+
+  figcaption {
+    margin-top: 12px;
+    font-size: 13.5px;
+    color: var(--ink-faint);
+  }
+
+  /* ---- component cards ---- */
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+
+  .card .k {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.03em;
+  }
+
+  .card h4 { font-size: 15.5px; margin: 6px 0 6px; }
+  .card p { font-size: 13.8px; margin: 0; }
+
+  /* ---- reference table ---- */
+
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+    font-size: 14px;
+  }
+
+  .ref-table th {
+    text-align: left;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .ref-table td {
+    padding: 12px 12px 12px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-muted);
+    vertical-align: top;
+  }
+
+  .ref-table td:first-child { color: var(--ink); white-space: nowrap; }
+
+  .pill {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--ok-soft);
+    color: var(--ok);
+  }
+
+  /* ---- footer ---- */
+
+  footer {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 28px 64px;
+    color: var(--ink-faint);
+    font-size: 13.5px;
+  }
+
+  footer .rule { height: 1px; background: var(--line); margin: 0 0 24px; }
+
+  @media (max-width: 600px) {
+    .steps { border-left: none; }
+    .step { padding-left: 0; }
+    .step::before { position: static; margin-bottom: 8px; }
+  }
+</style>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="titlebar">
+      <span class="dot"></span><span class="dot"></span><span class="dot live"></span>
+      <span class="titlebar-label">field guide</span>
+    </div>
+    <p class="eyebrow">cPanel Deploy Console</p>
+    <h1 class="doc-title">Getting it onto your server, and what happens after you do</h1>
+    <p class="dek">
+      A walkthrough for putting the deploy console on shared cPanel hosting where the terminal is
+      switched off, plus a look under the hood at how a button click on that page turns into a
+      real <code>composer install</code> or <code>artisan migrate</code> running on the server —
+      without SSH.
+    </p>
+
+    <div class="stat-strip">
+      <div class="stat"><div class="stat-k">Requires</div><div class="stat-v">PHP 7.4+</div></div>
+      <div class="stat"><div class="stat-k">Needs one of</div><div class="stat-v">proc_open / exec / shell_exec</div></div>
+      <div class="stat"><div class="stat-k">Install time</div><div class="stat-v">~5 minutes</div></div>
+      <div class="stat"><div class="stat-k">SSH required</div><div class="stat-v ok">no</div></div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <section id="upload">
+    <div class="part-head">
+      <span class="part-num">Part 1</span>
+      <h2>Getting it onto cPanel</h2>
+    </div>
+    <div class="prose">
+      <p>
+        Five steps, all inside the browser — File Manager and a couple of cPanel screens you
+        already use. Nothing here needs a terminal.
+      </p>
+    </div>
+
+    <ol class="steps">
+      <li class="step" data-n="1">
+        <h3>Upload and extract the zip</h3>
+        <p>Open cPanel → <strong>File Manager</strong>, go into <code>public_html</code>, and upload the zip. Right-click it → <strong>Extract</strong>.</p>
+      </li>
+
+      <li class="step" data-n="2">
+        <h3>Rename the folder to something unguessable</h3>
+        <p>This tool can run shell commands, so its URL is worth protecting like a login page. Don't leave it at an obvious name.</p>
+        <div class="frame">
+          <div class="frame-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="frame-body"><span class="cmt"># instead of</span>
+<span class="val">public_html/deploy/</span>
+
+<span class="cmt"># rename to something only you'd guess</span>
+<span class="val">public_html/deploy-x7f2q9/</span></div>
+        </div>
+      </li>
+
+      <li class="step" data-n="3">
+        <h3>Visit the URL and set a password</h3>
+        <p>First visit shows a one-time setup screen. Use a long, random password — it's hashed and stored locally, never in the code.</p>
+      </li>
+
+      <li class="step" data-n="4">
+        <h3>Add each project you host on the account</h3>
+        <p>On the <strong>Projects</strong> tab, add one entry per app — this is what lets one console manage several sites on the same shared account.</p>
+        <div class="frame">
+          <div class="frame-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="frame-body"><span class="field">Absolute Path   </span><span class="val">/home/youruser/myapp</span>
+<span class="field">PHP CLI Binary  </span><span class="val">php</span>  <span class="cmt"># or a full path from System Check</span>
+<span class="field">Composer.phar   </span><span class="val">(blank = shared one, downloaded once)</span></div>
+          </div>
+      </li>
+
+      <li class="step" data-n="5">
+        <h3>Run your first command</h3>
+        <p>Switch to the project on the <strong>Dashboard</strong> and click a quick command, or check the <strong>System Check</strong> tab first if anything looks uncertain about your host's setup.</p>
+      </li>
+    </ol>
+
+    <div class="callout warn">
+      <h4>⚠ this is a web shell — treat it like one</h4>
+      <p>Anyone who reaches this URL with the password can run commands as your hosting account. That's the whole point of the tool, so:</p>
+      <ul>
+        <li>Use a password you haven't reused anywhere else, 12+ random characters.</li>
+        <li>Keep the folder name private — don't link to it, don't commit it anywhere public.</li>
+        <li>Delete the tool (or at least its <code>data/</code> folder) once you're done deploying for the day.</li>
+        <li>Confirm <code>yourdomain.com/&lt;folder&gt;/data/config.json</code> returns a 403, not the file — that's the <code>.htaccess</code> guard doing its job.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="part-head">
+      <span class="part-num">Part 2</span>
+      <h2>What actually happens when you click a button</h2>
+    </div>
+    <div class="prose">
+      <p>
+        cPanel disabling the terminal blocks <em>your</em> shell access — it doesn't block PHP's.
+        Shared hosting still lets the PHP process itself start other programs, through functions
+        like <code>proc_open()</code>. This tool is a thin, password-gated web page in front of
+        that one fact: a button click is a form submission that ends, a few steps later, in PHP
+        starting <code>composer</code> or <code>php artisan</code> exactly like a terminal would.
+      </p>
+    </div>
+
+    <figure>
+      <div class="diagram-card">
+        <svg viewBox="0 0 860 230" role="img" aria-label="A browser click sends a password-and-CSRF-checked request to index.php, which asks executor.php to run the command; executor.php sets HOME and COMPOSER_HOME, starts the process with proc_open inside the project's own folder, and the output flows back up to the browser.">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor" />
+            </marker>
+          </defs>
+
+          <!-- nodes -->
+          <g font-size="12.5">
+            <rect x="10" y="70" width="130" height="60" rx="8" fill="none" stroke="currentColor" opacity="0.5"/>
+            <text x="75" y="95" text-anchor="middle" opacity="0.9">Browser</text>
+            <text x="75" y="112" text-anchor="middle" font-size="11" opacity="0.55">click “Migrate”</text>
+
+            <rect x="215" y="70" width="150" height="60" rx="8" fill="none" stroke="currentColor" opacity="0.5"/>
+            <text x="290" y="95" text-anchor="middle" opacity="0.9">index.php</text>
+            <text x="290" y="112" text-anchor="middle" font-size="11" opacity="0.55">session + CSRF check</text>
+
+            <rect x="440" y="70" width="160" height="60" rx="8" fill="none" stroke="currentColor" opacity="0.5"/>
+            <text x="520" y="95" text-anchor="middle" opacity="0.9">executor.php</text>
+            <text x="520" y="112" text-anchor="middle" font-size="11" opacity="0.55">sets HOME, picks exec fn</text>
+
+            <rect x="675" y="70" width="175" height="60" rx="8" fill="currentColor" opacity="0.08" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="762" y="95" text-anchor="middle" fill="var(--accent)" font-weight="600">your project folder</text>
+            <text x="762" y="112" text-anchor="middle" font-size="11" opacity="0.65">php artisan migrate --force</text>
+          </g>
+
+          <!-- forward arrows -->
+          <line x1="140" y1="92" x2="210" y2="92" stroke="currentColor" opacity="0.6" marker-end="url(#arrow)"/>
+          <line x1="365" y1="92" x2="435" y2="92" stroke="currentColor" opacity="0.6" marker-end="url(#arrow)"/>
+          <line x1="600" y1="92" x2="670" y2="92" stroke="currentColor" opacity="0.6" marker-end="url(#arrow)"/>
+
+          <text x="175" y="82" text-anchor="middle" font-size="10.5" opacity="0.6">POST</text>
+          <text x="400" y="82" text-anchor="middle" font-size="10.5" opacity="0.6">run_command()</text>
+          <text x="635" y="82" text-anchor="middle" font-size="10.5" opacity="0.6">proc_open()</text>
+
+          <!-- return path -->
+          <path d="M762,130 C762,190 75,190 75,130" fill="none" stroke="currentColor" opacity="0.35" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+          <text x="418" y="205" text-anchor="middle" font-size="11" opacity="0.55">stdout / stderr / exit code, rendered back on the page</text>
+        </svg>
+      </div>
+      <figcaption>How a dashboard click becomes a real shell command: the request is checked, the exec function is chosen, the command runs inside that one project's folder, and the output flows back to the same page.</figcaption>
+    </figure>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="k">01 · access</div>
+        <h4>Password + CSRF, every request</h4>
+        <p>The password is hashed on disk, never in code. Every action also carries a per-session CSRF token, and five failed logins lock an IP out for 15 minutes.</p>
+      </div>
+      <div class="card">
+        <div class="k">02 · execution</div>
+        <h4>Falls back through four exec methods</h4>
+        <p>Tries <code>proc_open</code> first, then <code>exec</code>, <code>shell_exec</code>, <code>system</code> — whichever your host hasn't disabled. System Check shows which one won.</p>
+      </div>
+      <div class="card">
+        <div class="k">03 · environment</div>
+        <h4>HOME and COMPOSER_HOME, set for you</h4>
+        <p>PHP-FPM processes often start with no <code>HOME</code>, which is why Composer errors with "the HOME or COMPOSER_HOME environment variable must be set." Every command gets both, pointed at a folder inside <code>data/</code>.</p>
+      </div>
+      <div class="card">
+        <div class="k">04 · isolation</div>
+        <h4>Scoped to one project folder</h4>
+        <p>Each command runs with its working directory set to exactly the project you picked — never anywhere else on the account.</p>
+      </div>
+      <div class="card">
+        <div class="k">05 · composer</div>
+        <h4>No global Composer needed</h4>
+        <p>Most shared hosts don't have <code>composer</code> on the PATH. System Check can download a shared <code>composer.phar</code> once, reused by every project.</p>
+      </div>
+      <div class="card">
+        <div class="k">06 · record</div>
+        <h4>Every run is logged</h4>
+        <p>Timestamp, IP, command, and exit code go to <code>data/logs/activity.log</code> — protected by the same <code>.htaccess</code> rule as the rest of <code>data/</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="reference">
+    <div class="part-head">
+      <span class="part-num">Reference</span>
+      <h2>Two things that will bite you, and where to look</h2>
+    </div>
+
+    <table class="ref-table">
+      <thead>
+        <tr><th>Symptom</th><th>What's actually happening</th><th>Where to fix it</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Composer fails:<br><code>HOME or COMPOSER_HOME<br>must be set</code></td>
+          <td>PHP-FPM has no <code>HOME</code> env var by default. <span class="pill">handled automatically</span></td>
+          <td>Already fixed — every command gets both vars set.</td>
+        </tr>
+        <tr>
+          <td><code>composer install</code> demands<br><code>ext-intl</code> or a newer PHP</td>
+          <td>Your <code>composer.lock</code> was built locally with different extensions/PHP than the server's CLI binary has.</td>
+          <td>System Check → look at the <em>CLI binary's</em> extensions, not the web ones. cPanel's extension toggles apply only to the PHP version selected at the top of that screen.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <div class="rule"></div>
+  Part of the cPanel Deploy Console tool. See <code>README.md</code> in the same folder for the full command reference and troubleshooting notes.
+</footer>

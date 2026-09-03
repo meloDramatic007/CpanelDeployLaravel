@@ -1,0 +1,73 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Fake artisan for local testing of the cPanel Deploy Console.
+ * Not a real Laravel app — just echoes plausible output for each
+ * command so the quick-command buttons and custom console can be
+ * exercised end-to-end without a database.
+ */
+
+$cmd = $argv[1] ?? null;
+$sleepMs = 150000; // pretend it's doing something
+usleep($sleepMs);
+
+fwrite(STDOUT, "Laravel Framework (fake) 11.x\n\n");
+
+switch ($cmd) {
+    case 'key:generate':
+        fwrite(STDOUT, "Application key set successfully.\n");
+        break;
+    case 'migrate':
+        fwrite(STDOUT, "INFO  Running migrations.\n\n");
+        fwrite(STDOUT, "  2024_01_01_000000_create_users_table ... DONE\n");
+        fwrite(STDOUT, "  2024_01_02_000000_create_posts_table ... DONE\n");
+        break;
+    case 'migrate:status':
+        fwrite(STDOUT, "  Migration name ....................... Batch / Status\n");
+        fwrite(STDOUT, "  2024_01_01_000000_create_users_table ... [1] Ran\n");
+        fwrite(STDOUT, "  2024_01_02_000000_create_posts_table ... [1] Ran\n");
+        break;
+    case 'storage:link':
+        fwrite(STDOUT, "The [public/storage] link has been connected to [storage/app/public].\n");
+        break;
+    case 'config:cache':
+        fwrite(STDOUT, "INFO  Configuration cached successfully.\n");
+        break;
+    case 'config:clear':
+        fwrite(STDOUT, "INFO  Configuration cache cleared successfully.\n");
+        break;
+    case 'route:cache':
+        fwrite(STDOUT, "INFO  Routes cached successfully.\n");
+        break;
+    case 'route:clear':
+        fwrite(STDOUT, "INFO  Route cache cleared successfully.\n");
+        break;
+    case 'view:clear':
+        fwrite(STDOUT, "INFO  Compiled views cleared successfully.\n");
+        break;
+    case 'cache:clear':
+        fwrite(STDOUT, "INFO  Application cache cleared successfully.\n");
+        break;
+    case 'optimize':
+        fwrite(STDOUT, "INFO  Files cached successfully.\n");
+        break;
+    case 'optimize:clear':
+        fwrite(STDOUT, "INFO  Caches cleared successfully.\n");
+        break;
+    case 'queue:restart':
+        fwrite(STDOUT, "INFO  Broadcasting restart signal.\n");
+        break;
+    case 'about':
+        fwrite(STDOUT, "Environment ........................... local\n");
+        fwrite(STDOUT, "Debug Mode ............................ ENABLED\n");
+        fwrite(STDOUT, "This is the fake sample project used for testing the deploy console.\n");
+        break;
+    case null:
+        fwrite(STDOUT, "Usage: artisan <command>\n");
+        exit(1);
+    default:
+        fwrite(STDOUT, "Command \"$cmd\" simulated (no real handler in this fake artisan).\n");
+        break;
+}
+
+exit(0);

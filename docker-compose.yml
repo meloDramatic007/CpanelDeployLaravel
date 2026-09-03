@@ -1,0 +1,14 @@
+services:
+  deploy-console:
+    build:
+      context: ./docker
+    ports:
+      - "8080:80"
+    volumes:
+      # Mounting the whole repo (not individual files) avoids a Docker bind-mount
+      # pitfall: single-file mounts bind to a specific inode, and editors that save
+      # via write-temp-then-rename (atomic writes) produce a new inode, leaving the
+      # container serving stale content forever. Directory mounts don't have this
+      # problem since lookups happen by filename inside the mounted directory.
+      - .:/var/www/html/deploy-console
+      - ./docker/sample-project:/var/www/html/sample-project
